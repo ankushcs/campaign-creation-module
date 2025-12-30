@@ -1,0 +1,216 @@
+{
+  "meta": {
+    "campaign": {
+      "fields": [
+        { "id": "name", "label": "Campaign Name", "type": "text", "required": true, "editable": true, "visible": true },
+        {
+          "id": "objective",
+          "label": "Objective",
+          "type": "select",
+          "required": true,
+          "editable": true,
+          "visible": true,
+          "options": ["OUTCOME_AWARENESS", "OUTCOME_ENGAGEMENT", "OUTCOME_TRAFFIC", "OUTCOME_LEADS", "OUTCOME_SALES"]
+        },
+        {
+          "id": "status",
+          "label": "Status",
+          "type": "select",
+          "required": true,
+          "editable": true,
+          "visible": true,
+          "options": ["ACTIVE", "PAUSED", "ARCHIVED"]
+        },
+        {
+          "id": "budget_optimization",
+          "label": "Budget Optimization",
+          "type": "select",
+          "required": false,
+          "editable": true,
+          "visible": true,
+          "options": ["CBO", "ABO"]
+        },
+        {
+          "id": "buying_type",
+          "label": "Buying Type",
+          "type": "select",
+          "required": true,
+          "editable": true,
+          "visible": true,
+          "options": ["AUCTION", "RESERVED"]
+        },
+        {
+          "id": "spend_cap",
+          "label": "Spend Cap",
+          "type": "number",
+          "required": false,
+          "editable": true,
+          "visible": true
+        },
+        {
+          "id": "start_date",
+          "label": "Start Date",
+          "type": "date",
+          "required": false,
+          "editable": true,
+          "visible": true
+        },
+        { "id": "end_date", "label": "End Date", "type": "date", "required": false, "editable": true, "visible": false }
+      ]
+    },
+    "adset": {
+      "fields": [
+        { "id": "name", "label": "Adset Name", "type": "text", "required": true, "editable": true, "visible": true },
+        {
+          "id": "campaign_id",
+          "label": "Campaign",
+          "type": "select",
+          "required": true,
+          "editable": false,
+          "visible": true
+        },
+        {
+          "id": "status",
+          "label": "Status",
+          "type": "select",
+          "required": true,
+          "editable": true,
+          "visible": true,
+          "options": ["ACTIVE", "PAUSED", "ARCHIVED"]
+        },
+        {
+          "id": "optimization_goal",
+          "label": "Optimization Goal",
+          "type": "select",
+          "required": true,
+          "editable": true,
+          "visible": true,
+          "options": ["IMPRESSIONS", "LINK_CLICKS", "CONVERSIONS", "REACH"]
+        },
+        {
+          "id": "billing_event",
+          "label": "Billing Event",
+          "type": "select",
+          "required": true,
+          "editable": true,
+          "visible": true,
+          "options": ["IMPRESSIONS", "LINK_CLICKS", "APP_INSTALLS"]
+        },
+        {
+          "id": "bid_amount",
+          "label": "Bid Amount",
+          "type": "number",
+          "required": false,
+          "editable": true,
+          "visible": true
+        },
+        {
+          "id": "daily_budget",
+          "label": "Daily Budget",
+          "type": "number",
+          "required": false,
+          "editable": true,
+          "visible": true
+        },
+        {
+          "id": "lifetime_budget",
+          "label": "Lifetime Budget",
+          "type": "number",
+          "required": false,
+          "editable": true,
+          "visible": true
+        },
+        {
+          "id": "targeting",
+          "label": "Targeting",
+          "type": "json",
+          "required": true,
+          "editable": true,
+          "visible": true
+        },
+        {
+          "id": "start_time",
+          "label": "Start Time",
+          "type": "datetime",
+          "required": false,
+          "editable": true,
+          "visible": true
+        },
+        {
+          "id": "end_time",
+          "label": "End Time",
+          "type": "datetime",
+          "required": false,
+          "editable": true,
+          "visible": false
+        }
+      ]
+    },
+    "ad": {
+      "fields": [
+        { "id": "name", "label": "Ad Name", "type": "text", "required": true, "editable": true, "visible": true },
+        { "id": "adset_id", "label": "Adset", "type": "select", "required": true, "editable": false, "visible": true },
+        {
+          "id": "status",
+          "label": "Status",
+          "type": "select",
+          "required": true,
+          "editable": true,
+          "visible": true,
+          "options": ["ACTIVE", "PAUSED", "ARCHIVED"]
+        },
+        {
+          "id": "creative_type",
+          "label": "Creative Type",
+          "type": "select",
+          "required": true,
+          "editable": true,
+          "visible": true,
+          "options": ["IMAGE", "VIDEO", "CAROUSEL", "COLLECTION"]
+        },
+        {
+          "id": "primary_text",
+          "label": "Primary Text",
+          "type": "textarea",
+          "required": true,
+          "editable": true,
+          "visible": true
+        },
+        { "id": "headline", "label": "Headline", "type": "text", "required": true, "editable": true, "visible": true },
+        {
+          "id": "description",
+          "label": "Description",
+          "type": "text",
+          "required": false,
+          "editable": true,
+          "visible": true
+        },
+        {
+          "id": "call_to_action",
+          "label": "Call to Action",
+          "type": "select",
+          "required": true,
+          "editable": true,
+          "visible": true,
+          "options": ["LEARN_MORE", "SHOP_NOW", "SIGN_UP", "DOWNLOAD", "GET_QUOTE"]
+        },
+        {
+          "id": "destination_url",
+          "label": "Destination URL",
+          "type": "url",
+          "required": true,
+          "editable": true,
+          "visible": true
+        },
+        {
+          "id": "media_url",
+          "label": "Media URL",
+          "type": "url",
+          "required": false,
+          "editable": true,
+          "visible": false
+        }
+      ]
+    }
+  }
+}

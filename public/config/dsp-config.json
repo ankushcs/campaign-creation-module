@@ -1,0 +1,36 @@
+{
+  "dsps": [
+    {
+      "id": "meta",
+      "name": "Meta Ads",
+      "enabled": true,
+      "icon": "facebook",
+      "description": "Facebook & Instagram Ads Manager",
+      "apiEndpoint": "/api/meta"
+    },
+    {
+      "id": "google",
+      "name": "Google Ads",
+      "enabled": false,
+      "icon": "google",
+      "description": "Coming Soon",
+      "apiEndpoint": "/api/google"
+    },
+    {
+      "id": "dv360",
+      "name": "DV360",
+      "enabled": false,
+      "icon": "display",
+      "description": "Coming Soon",
+      "apiEndpoint": "/api/dv360"
+    },
+    {
+      "id": "tiktok",
+      "name": "TikTok Ads",
+      "enabled": false,
+      "icon": "video",
+      "description": "Coming Soon",
+      "apiEndpoint": "/api/tiktok"
+    }
+  ]
+}

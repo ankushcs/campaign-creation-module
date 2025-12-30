@@ -1,0 +1,105 @@
+{
+  "campaigns": [
+    {
+      "id": "camp_001",
+      "name": "Summer Sale 2024",
+      "objective": "OUTCOME_SALES",
+      "status": "ACTIVE",
+      "budget_optimization": "CBO",
+      "buying_type": "AUCTION",
+      "spend_cap": 10000,
+      "start_date": "2024-06-01"
+    },
+    {
+      "id": "camp_002",
+      "name": "Brand Awareness Q2",
+      "objective": "OUTCOME_AWARENESS",
+      "status": "ACTIVE",
+      "budget_optimization": "ABO",
+      "buying_type": "AUCTION",
+      "start_date": "2024-04-01"
+    },
+    {
+      "id": "camp_003",
+      "name": "Lead Generation - Healthcare",
+      "objective": "OUTCOME_LEADS",
+      "status": "PAUSED",
+      "budget_optimization": "CBO",
+      "buying_type": "AUCTION",
+      "spend_cap": 5000,
+      "start_date": "2024-05-15"
+    }
+  ],
+  "adsets": [
+    {
+      "id": "adset_001",
+      "name": "Summer Sale - US 18-35",
+      "campaign_id": "camp_001",
+      "status": "ACTIVE",
+      "optimization_goal": "CONVERSIONS",
+      "billing_event": "IMPRESSIONS",
+      "bid_amount": 5,
+      "daily_budget": 200,
+      "targeting": "{\"age_min\": 18, \"age_max\": 35, \"geo_locations\": {\"countries\": [\"US\"]}}"
+    },
+    {
+      "id": "adset_002",
+      "name": "Summer Sale - US 36-55",
+      "campaign_id": "camp_001",
+      "status": "ACTIVE",
+      "optimization_goal": "CONVERSIONS",
+      "billing_event": "IMPRESSIONS",
+      "bid_amount": 5,
+      "daily_budget": 150,
+      "targeting": "{\"age_min\": 36, \"age_max\": 55, \"geo_locations\": {\"countries\": [\"US\"]}}"
+    },
+    {
+      "id": "adset_003",
+      "name": "Brand Awareness - Nationwide",
+      "campaign_id": "camp_002",
+      "status": "ACTIVE",
+      "optimization_goal": "REACH",
+      "billing_event": "IMPRESSIONS",
+      "daily_budget": 100,
+      "targeting": "{\"age_min\": 18, \"age_max\": 65, \"geo_locations\": {\"countries\": [\"US\"]}}"
+    }
+  ],
+  "ads": [
+    {
+      "id": "ad_001",
+      "name": "Summer Sale Creative 1",
+      "adset_id": "adset_001",
+      "status": "ACTIVE",
+      "creative_type": "IMAGE",
+      "primary_text": "Don't miss our biggest summer sale! Save up to 50% on everything.",
+      "headline": "Summer Sale - Up to 50% Off",
+      "description": "Limited time offer",
+      "call_to_action": "SHOP_NOW",
+      "destination_url": "https://example.com/summer-sale"
+    },
+    {
+      "id": "ad_002",
+      "name": "Summer Sale Creative 2",
+      "adset_id": "adset_001",
+      "status": "ACTIVE",
+      "creative_type": "VIDEO",
+      "primary_text": "Experience the hottest deals of the season! Shop now and save big.",
+      "headline": "Summer Deals Are Here",
+      "description": "Shop the sale",
+      "call_to_action": "SHOP_NOW",
+      "destination_url": "https://example.com/summer-sale"
+    },
+    {
+      "id": "ad_003",
+      "name": "Brand Awareness - Video Ad",
+      "adset_id": "adset_003",
+      "status": "ACTIVE",
+      "creative_type": "VIDEO",
+      "primary_text": "Discover what makes us different. Learn about our story and values.",
+      "headline": "Meet Our Brand",
+      "description": "Learn more about us",
+      "call_to_action": "LEARN_MORE",
+      "destination_url": "https://example.com/about"
+    }
+  ]
+}
