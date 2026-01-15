@@ -2,15 +2,14 @@ export type DSP = {
   id: string
   name: string
   enabled: boolean
-  icon: string
+  icon?: string
   description: string
-  apiEndpoint: string
+  apiEndpoint?: string
 }
 
 export type Account = {
   id: string
   name: string
-  industry: string
 }
 
 export type FieldType = "text" | "number" | "select" | "date" | "datetime" | "textarea" | "url" | "json"
@@ -21,7 +20,7 @@ export type Field = {
   type: FieldType
   required: boolean
   editable: boolean
-  visible: boolean
+  isActive: boolean
   options?: string[]
 }
 

@@ -1,16 +1,16 @@
 "use client"
 
 import { useState } from "react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
-import type { Field } from "@/lib/types"
-import { AlertCircle, CheckCircle, MoreVertical, Copy, Trash2, Edit, Pause, Play, Loader2, PauseCircle, PlayCircle } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { PaginationControls } from "@/components/ui/pagination-controls"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table"
+import { Checkbox } from "../ui/checkbox"
+import { Input } from "../ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
+import { Button } from "../ui/button"
+import type { Field } from "../../lib/types"
+import { AlertCircle, CheckCircle, MoreVertical, Copy, Trash2, Edit, Pause, Play, Loader2, PauseCircle } from "lucide-react"
+import { cn } from "../../lib/utils"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
+import { PaginationControls } from "../ui/pagination-controls"
 
 type DataTableProps = {
   data: any[]
@@ -134,7 +134,7 @@ export function DataTable({
 
   if (isLoading) {
     return (
-      <div className="flex h-full items-center justify-center rounded-lg border border-border bg-card">
+      <div className="flex h-full items-center justify-center -lg border border-border bg-card">
         <div className="flex flex-col items-center gap-2">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
           <p className="text-sm text-muted-foreground">Fetching data...</p>
@@ -145,7 +145,7 @@ export function DataTable({
 
   if (data.length === 0) {
     return (
-      <div className="flex h-full items-center justify-center rounded-lg border-2 border-dashed border-border bg-card">
+      <div className="flex h-full items-center justify-center -lg border-2 border-dashed border-border bg-card">
         <div className="text-center">
           <p className="text-lg font-medium text-muted-foreground">No data, load data to edit/update</p>
         </div>
@@ -155,7 +155,7 @@ export function DataTable({
 
   return (
     <div className="flex h-full flex-col gap-4">
-      <div className="flex-1 overflow-auto rounded-lg border border-border bg-card">
+      <div className="flex-1 overflow-auto -lg border border-border bg-card">
         <Table>
           <TableHeader>
             <TableRow className="bg-muted hover:bg-muted">
@@ -193,9 +193,9 @@ export function DataTable({
                   {row._error ? (
                     <AlertCircle className="h-4 w-4 text-destructive" />
                   ) : row._draft ? (
-                    <div className="h-2 w-2 rounded-full bg-warning" title="Draft" />
+                    <div className="h-2 w-2 -full bg-warning" title="Draft" />
                   ) : row._edited ? (
-                    <div className="h-2 w-2 rounded-full bg-info" title="Edited" />
+                    <div className="h-2 w-2 -full bg-info" title="Edited" />
                   ) : row.status === "PAUSED" ? (
                     <PauseCircle className="h-4 w-4 text-muted-foreground" />
                   ) : (

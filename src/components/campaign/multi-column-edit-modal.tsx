@@ -8,14 +8,14 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+} from "../ui/dialog"
+import { Button } from "../ui/button"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table"
+import { Input } from "../ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { CheckCircle, XCircle } from "lucide-react"
-import { cn } from "@/lib/utils"
-import type { Field } from "@/lib/types"
+// import { cn } from "../../lib/utils"
+import type { Field } from "../../lib/types"
 
 type MultiColumnEditModalProps = {
   isOpen: boolean
@@ -58,11 +58,11 @@ export function MultiColumnEditModal({
     items.forEach((item) => {
       let isValid = true
       fields.forEach((field) => {
-        if (field.required && field.visible && !field.editable) {
+        if (field.required && field.isActive && !field.editable) {
            // Skip non-editable fields (like ID)
            return
         }
-        if (field.required && field.visible) {
+        if (field.required && field.isActive) {
              const value = item[field.id]
              if (value === undefined || value === "" || value === null) {
                  isValid = false
@@ -82,7 +82,7 @@ export function MultiColumnEditModal({
     }
   }
 
-  const editableFields = fields.filter((f) => f.editable && f.visible)
+  const editableFields = fields.filter((f) => f.editable && f.isActive)
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -95,7 +95,7 @@ export function MultiColumnEditModal({
         </DialogHeader>
 
         <div className="flex-1 overflow-auto p-6">
-          <div className="rounded-md border border-border">
+          <div className="-md border border-border">
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted hover:bg-muted">
@@ -115,7 +115,7 @@ export function MultiColumnEditModal({
                   <TableRow key={item.id} className="hover:bg-accent/50 text-xs">
                     <TableCell className="text-center">
                         {validationStatus[item.id] === undefined ? (
-                            <div className="w-4 h-4 rounded-full border-2 border-muted-foreground/30 mx-auto" />
+                            <div className="w-4 h-4 -full border-2 border-muted-foreground/30 mx-auto" />
                         ) : validationStatus[item.id] ? (
                             <CheckCircle className="w-5 h-5 text-success mx-auto" />
                         ) : (

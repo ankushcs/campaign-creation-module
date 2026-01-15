@@ -8,12 +8,13 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Label } from "@/components/ui/label"
-import type { Field, Campaign, Adset } from "@/lib/types"
+} from "../ui/dialog"
+import { Button } from "../ui/button"
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group"
+import { Label } from "../ui/label"
+import type { Field, Campaign, Adset } from "../../lib/types"
 import { BulkCreateModal } from "./bulk-create-modal"
+import { cn } from "../../lib/utils"
 
 type CreateCampaignModalProps = {
   isOpen: boolean
@@ -67,9 +68,10 @@ export function CreateCampaignModal({
           <RadioGroup value={creationType} onValueChange={(v) => setCreationType(v as any)}>
             <div className="space-y-3">
               <div
-                className={`flex items-center space-x-3 rounded-lg border-2 p-4 cursor-pointer transition-colors ${
+                className={cn(
+                  "flex items-center space-x-3 rounded-lg border-2 p-4 cursor-pointer transition-colors",
                   creationType === "manual" ? "border-primary bg-accent" : "border-border hover:border-primary/50"
-                }`}
+                )}
                 onClick={() => setCreationType("manual")}
               >
                 <RadioGroupItem value="manual" id="manual" />
@@ -80,14 +82,18 @@ export function CreateCampaignModal({
               </div>
 
               <div
-                className={`flex items-center space-x-3 rounded-lg border-2 p-4 cursor-pointer transition-colors ${
-                  creationType === "clone" ? "border-primary bg-accent" : "border-border hover:border-primary/50"
-                }`}
-                onClick={() => setCreationType("clone")}
+                className={cn(
+                  "flex items-center space-x-3 rounded-lg border-2 p-4 transition-colors relative",
+                  creationType === "clone" ? "border-primary bg-accent" : "border-border",
+                  "opacity-60 cursor-not-allowed grayscale-[0.5]"
+                )}
               >
-                <RadioGroupItem value="clone" id="clone" />
-                <Label htmlFor="clone" className="cursor-pointer flex-1">
-                  <div className="font-semibold text-foreground">Clone & Remix</div>
+                <RadioGroupItem value="clone" id="clone" disabled />
+                <Label htmlFor="clone" className="cursor-not-allowed flex-1">
+                  <div className="flex items-center justify-between">
+                    <div className="font-semibold text-foreground">Clone & Remix</div>
+                    <span className="text-[10px] font-bold bg-muted px-1.5 py-0.5 rounded uppercase tracking-wider">Coming Soon</span>
+                  </div>
                   <div className="text-sm text-muted-foreground">Start from an existing {type} and modify it</div>
                 </Label>
               </div>

@@ -8,14 +8,14 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import type { Batch } from "@/lib/types"
+} from "../ui/dialog"
+import { Button } from "../ui/button"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table"
+import { Badge } from "../ui/badge"
+import type { Batch } from "../../lib/types"
 import { CheckCircle, AlertCircle, Send } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { cn } from "../../lib/utils"
 
 type ReviewBatchModalProps = {
   isOpen: boolean
@@ -54,7 +54,7 @@ export function ReviewBatchModal({ isOpen, batch, onClose, onPublish }: ReviewBa
           </div>
 
           <TabsContent value="unapplied" className="flex-1 overflow-auto p-6 mt-0">
-            <div className="rounded-lg border border-border bg-background">
+            <div className="-lg border border-border bg-background">
               <Table>
                 <TableHeader>
                   <TableRow className="bg-muted hover:bg-muted">
@@ -66,7 +66,7 @@ export function ReviewBatchModal({ isOpen, batch, onClose, onPublish }: ReviewBa
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {batch.items.map((item, idx) => (
+                  {batch.items.map((item, _idx) => (
                     <TableRow
                       key={item.id}
                       className={cn(
@@ -80,7 +80,7 @@ export function ReviewBatchModal({ isOpen, batch, onClose, onPublish }: ReviewBa
                         ) : item.validationStatus === "error" ? (
                           <AlertCircle className="h-4 w-4 text-destructive" />
                         ) : (
-                          <div className="h-2 w-2 rounded-full bg-warning" />
+                          <div className="h-2 w-2 -full bg-warning" />
                         )}
                       </TableCell>
                       <TableCell>
@@ -105,7 +105,7 @@ export function ReviewBatchModal({ isOpen, batch, onClose, onPublish }: ReviewBa
           </TabsContent>
 
           <TabsContent value="submitted" className="flex-1 p-6 mt-0">
-            <div className="flex h-64 items-center justify-center rounded-lg border-2 border-dashed border-border">
+            <div className="flex h-64 items-center justify-center -lg border-2 border-dashed border-border">
               <div className="text-center">
                 <p className="text-lg font-medium text-muted-foreground">No submitted batches</p>
                 <p className="text-sm text-muted-foreground">Published batches will appear here</p>

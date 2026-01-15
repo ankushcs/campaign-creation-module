@@ -6,8 +6,8 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
+} from "../ui/dialog"
+import { Button } from "../ui/button"
 import { LayoutList, TableProperties } from "lucide-react"
 
 type BulkEditChoiceModalProps = {
@@ -33,7 +33,7 @@ export function BulkEditChoiceModal({ isOpen, onSelect, onClose }: BulkEditChoic
             className="h-32 flex flex-col items-center justify-center gap-4 hover:border-primary hover:bg-primary/5"
             onClick={() => onSelect("single")}
           >
-            <div className="p-3 rounded-full bg-primary/10 text-primary">
+            <div className="p-3 -full bg-primary/10 text-primary">
               <LayoutList className="h-6 w-6" />
             </div>
             <div className="text-center">
@@ -49,7 +49,7 @@ export function BulkEditChoiceModal({ isOpen, onSelect, onClose }: BulkEditChoic
             className="h-32 flex flex-col items-center justify-center gap-4 hover:border-primary hover:bg-primary/5"
             onClick={() => onSelect("multi")}
           >
-            <div className="p-3 rounded-full bg-primary/10 text-primary">
+            <div className="p-3 -full bg-primary/10 text-primary">
               <TableProperties className="h-6 w-6" />
             </div>
             <div className="text-center">

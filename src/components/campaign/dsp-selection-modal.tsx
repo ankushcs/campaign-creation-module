@@ -8,12 +8,12 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
-import type { DSP } from "@/lib/types"
+} from "../ui/dialog"
+import { Button } from "../ui/button"
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group"
+import { Label } from "../ui/label"
+import { Badge } from "../ui/badge"
+import type { DSP } from "../../lib/types"
 
 type DSPSelectionModalProps = {
   isOpen: boolean
@@ -35,7 +35,7 @@ export function DSPSelectionModal({ isOpen, dsps, onSelect, onClose }: DSPSelect
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px] bg-card">
         <DialogHeader>
-          <DialogTitle className="text-xl">Select DSP</DialogTitle>
+          <DialogTitle className="text-xl">Select Platform</DialogTitle>
           <DialogDescription className="text-muted-foreground">
             Choose the advertising platform you want to work with
           </DialogDescription>
@@ -45,7 +45,7 @@ export function DSPSelectionModal({ isOpen, dsps, onSelect, onClose }: DSPSelect
           {dsps.map((dsp) => (
             <div
               key={dsp.id}
-              className={`flex items-center space-x-3 rounded-lg border-2 p-4 transition-colors ${
+              className={`flex items-center space-x-3 -lg border-2 p-4 transition-colors ${
                 dsp.enabled ? "cursor-pointer hover:border-primary" : "cursor-not-allowed opacity-50"
               } ${selectedDSP === dsp.id ? "border-primary bg-accent" : "border-border"}`}
               onClick={() => dsp.enabled && setSelectedDSP(dsp.id)}

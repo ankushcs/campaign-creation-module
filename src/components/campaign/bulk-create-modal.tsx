@@ -8,15 +8,15 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import type { Field, Campaign, Adset } from "@/lib/types"
+} from "../ui/dialog"
+import { Button } from "../ui/button"
+import { Input } from "../ui/input"
+import { Label } from "../ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
+import { Textarea } from "../ui/textarea"
+import { Checkbox } from "../ui/checkbox"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table"
+import type { Field, Campaign, Adset } from "../../lib/types"
 import { Plus, Trash2 } from "lucide-react"
 
 type BulkCreateModalProps = {
@@ -44,7 +44,21 @@ export function BulkCreateModal({
   onBack,
   onClose,
 }: BulkCreateModalProps) {
-  const [rows, setRows] = useState([{ id: "1", ...defaultTemplate }])
+  const visibleFields = fields.filter((f) => f.isActive)
+
+  const getInitialRow = (id: string) => {
+    const row: any = { id }
+    visibleFields.forEach((field) => {
+      if (field.type === "select" && field.options && field.options.length > 0) {
+        row[field.id] = defaultTemplate[field.id] || field.options[0]
+      } else {
+        row[field.id] = ""
+      }
+    })
+    return row
+  }
+
+  const [rows, setRows] = useState(() => [getInitialRow("1")])
   const [selectedCampaign, setSelectedCampaign] = useState("")
   const [cloneOptions, setCloneOptions] = useState({
     objective: false,
@@ -53,7 +67,7 @@ export function BulkCreateModal({
   })
 
   const addRow = () => {
-    setRows([...rows, { id: Date.now().toString(), ...defaultTemplate }])
+    setRows([...rows, getInitialRow(Date.now().toString())])
   }
 
   const removeRow = (id: string) => {
@@ -72,7 +86,7 @@ export function BulkCreateModal({
       id: `${type}_${Date.now()}_${Math.random()}`,
     }))
     onAddToBatch(items, type)
-    setRows([{ id: "1", ...defaultTemplate }])
+    setRows([getInitialRow("1")])
   }
 
   const renderFieldCell = (row: any, field: Field) => {
@@ -210,7 +224,6 @@ export function BulkCreateModal({
   }
 
   // Manual/Bulk creation view with table
-  const visibleFields = fields.filter((f) => f.visible)
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -227,7 +240,7 @@ export function BulkCreateModal({
         </DialogHeader>
 
         <div className="flex-1 overflow-auto p-6">
-          <div className="rounded-lg border border-border bg-background">
+          <div className="-lg border border-border bg-background">
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted hover:bg-muted">

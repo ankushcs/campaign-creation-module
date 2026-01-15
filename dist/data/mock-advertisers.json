@@ -1,0 +1,52 @@
+{
+  "advertisers": [
+    {
+      "id": "adv_001",
+      "name": "Acme Corporation",
+      "industry": "Technology",
+      "accounts": ["Meta", "Google"]
+    },
+    {
+      "id": "adv_002",
+      "name": "Global Retail Co.",
+      "industry": "Retail",
+      "accounts": ["Meta"]
+    },
+    {
+      "id": "adv_003",
+      "name": "Financial Services Inc.",
+      "industry": "Finance",
+      "accounts": ["Meta", "Google", "DV360"]
+    },
+    {
+      "id": "adv_004",
+      "name": "Healthcare Plus",
+      "industry": "Healthcare",
+      "accounts": ["Meta"]
+    },
+    {
+      "id": "adv_005",
+      "name": "Travel Adventures",
+      "industry": "Travel & Tourism",
+      "accounts": ["Meta", "TikTok"]
+    },
+    {
+      "id": "adv_006",
+      "name": "Fashion Forward",
+      "industry": "Fashion",
+      "accounts": ["Meta"]
+    },
+    {
+      "id": "adv_007",
+      "name": "Tech Startup Labs",
+      "industry": "Technology",
+      "accounts": ["Meta", "Google"]
+    },
+    {
+      "id": "adv_008",
+      "name": "Eco Products Co.",
+      "industry": "Sustainability",
+      "accounts": ["Meta"]
+    }
+  ]
+}

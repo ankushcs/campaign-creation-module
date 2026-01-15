@@ -1,0 +1,25 @@
+{
+  "meta": {
+    "campaign": {
+      "name": "New Campaign",
+      "objective": "OUTCOME_TRAFFIC",
+      "status": "PAUSED",
+      "budget_optimization": "CBO",
+      "buying_type": "AUCTION"
+    },
+    "adset": {
+      "name": "New Adset",
+      "status": "PAUSED",
+      "optimization_goal": "LINK_CLICKS",
+      "billing_event": "IMPRESSIONS",
+      "daily_budget": 50,
+      "targeting": "{\"age_min\": 18, \"age_max\": 65}"
+    },
+    "ad": {
+      "name": "New Ad",
+      "status": "PAUSED",
+      "creative_type": "IMAGE",
+      "call_to_action": "LEARN_MORE"
+    }
+  }
+}

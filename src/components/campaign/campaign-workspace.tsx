@@ -1,20 +1,28 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Settings, Plus, ChevronDown, Edit2, RefreshCw } from "lucide-react"
-import type { Campaign, Adset, Ad, Field, Batch, BatchItem, Account } from "@/lib/types"
+import { Button } from "../ui/button"
+import { Badge } from "../ui/badge"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
+import { Settings, Plus, ChevronDown, Edit2, RefreshCw, Upload } from "lucide-react"
+import type { Campaign, Adset, Ad, Field, Batch, BatchItem, Account } from "../../lib/types"
 import { DataTable } from "./data-table"
 import { BatchPanel } from "./batch-panel"
 import { DefaultTemplateModal } from "./default-template-modal"
 import { ReviewBatchModal } from "./review-batch-modal"
 import { CreateCampaignModal } from "./create-campaign-modal"
 import { BulkEditModal } from "./bulk-edit-modal"
-import { loadTableSchema, loadDefaultTemplate, loadMockCampaigns } from "@/lib/config-loader"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { loadTableSchema, loadDefaultTemplate, loadMockCampaigns } from "../../lib/config-loader"
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger
+} from "../ui/dropdown-menu"
+import { useCampaignStore } from "../../lib/store"
+import { AccountSwitchModal } from "./account-switch-modal"
+import { CreativeUploadModal } from "./creative-upload-modal"
+// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { FilterBar, type Filters } from "./filter-bar"
 import { BulkEditChoiceModal } from "./bulk-edit-choice-modal"
 import { MultiColumnEditModal } from "./multi-column-edit-modal"
@@ -25,15 +33,32 @@ type CampaignWorkspaceProps = {
   account: Account
   allAccounts: Account[]
 }
-
 const GROUP_COLORS = ["bg-blue-50", "bg-green-50", "bg-purple-50", "bg-orange-50", "bg-pink-50", "bg-yellow-50"]
 
 let colorIndex = 0
 
 export function CampaignWorkspace({ dspId, dspName, account: initialAccount, allAccounts }: CampaignWorkspaceProps) {
+  // Get data from global store
+  const { 
+    all_selected_accounts,
+    current_active_account,
+    setCurrentActiveAccount,
+    pageSchema,
+    setPageSchema
+  } = useCampaignStore()
+  
+  // Derived hierarchy labels (pluralized for tabs)
+  const hierarchy = pageSchema?.platform_hierarchy || ["Campaign", "Ad Set", "Ad"]
+  const levelLabels = {
+    campaign: hierarchy[0] || "Campaign",
+    adset: hierarchy[1] || "Ad Set",
+    ad: hierarchy[2] || "Ad"
+  }
+  
   const [activeTab, setActiveTab] = useState<"campaigns" | "adsets" | "ads">("campaigns")
-  const [currentAccount, setCurrentAccount] = useState<Account>(initialAccount)
-  const [schema, setSchema] = useState<Record<string, { fields: Field[] }>>({})
+  // Use current_active_account from store if available, otherwise fallback to initialAccount
+  const [currentAccount, setCurrentAccount] = useState<Account>(current_active_account || initialAccount)
+  const [schema, setSchema] = useState<Record<string, Field[]>>({})
   const [defaultTemplate, setDefaultTemplate] = useState<Record<string, any>>({})
   const [campaigns, setCampaigns] = useState<Campaign[]>([])
   const [adsets, setAdsets] = useState<Adset[]>([])
@@ -46,9 +71,11 @@ export function CampaignWorkspace({ dspId, dspName, account: initialAccount, all
   const [showBulkEditModal, setShowBulkEditModal] = useState(false)
   const [showBulkEditChoiceModal, setShowBulkEditChoiceModal] = useState(false)
   const [showMultiColumnEditModal, setShowMultiColumnEditModal] = useState(false)
+  const [showCreativeUploadModal, setShowCreativeUploadModal] = useState(false)
   
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set())
-  const [isAccountSwitcherOpen, setIsAccountSwitcherOpen] = useState(false)
+  const [showAccountSwitchModal, setShowAccountSwitchModal] = useState(false)
+  const [, setIsAccountSwitcherOpen] = useState(false)
 
   const [fetchingType, setFetchingType] = useState<"campaign" | "adset" | "ad" | null>(null)
   const [isRefreshing, setIsRefreshing] = useState(false)
@@ -62,6 +89,16 @@ export function CampaignWorkspace({ dspId, dspName, account: initialAccount, all
   })
 
 
+
+  useEffect(() => {
+    // Log store data for debugging
+    console.log('Store data:', { all_selected_accounts, current_active_account });
+    
+    // Sync currentAccount with store when it changes
+    if (current_active_account && current_active_account.id !== currentAccount.id) {
+      setCurrentAccount(current_active_account);
+    }
+  }, [all_selected_accounts, current_active_account]);
 
   useEffect(() => {
     loadTableSchema(dspId).then(setSchema)
@@ -109,9 +146,13 @@ export function CampaignWorkspace({ dspId, dspName, account: initialAccount, all
   }
 
   const handleAccountChange = (accountId: string) => {
-    const account = allAccounts.find((a) => a.id === accountId)
+    // Use all_selected_accounts from store instead of allAccounts prop
+    const accountsToSearch = all_selected_accounts.length > 0 ? all_selected_accounts : allAccounts
+    const account = accountsToSearch.find((a) => a.id === accountId)
     if (account) {
       setCurrentAccount(account)
+      // Update global store
+      setCurrentActiveAccount(account)
       setIsAccountSwitcherOpen(false)
     }
   }
@@ -122,7 +163,7 @@ export function CampaignWorkspace({ dspId, dspName, account: initialAccount, all
     await new Promise((resolve) => setTimeout(resolve, 1500))
 
     try {
-      const { loadDemoFetchData } = await import("@/lib/config-loader")
+      const { loadDemoFetchData } = await import("../../lib/config-loader")
       const data = await loadDemoFetchData()
       
       if (type === "campaign") {
@@ -153,7 +194,7 @@ export function CampaignWorkspace({ dspId, dspName, account: initialAccount, all
     await new Promise((resolve) => setTimeout(resolve, 1500))
 
     try {
-      const { loadDemoFetchData } = await import("@/lib/config-loader")
+      const { loadDemoFetchData } = await import("../../lib/config-loader")
       const data = await loadDemoFetchData()
       
       // Refresh Campaigns
@@ -340,7 +381,7 @@ export function CampaignWorkspace({ dspId, dspName, account: initialAccount, all
     setSelectedRows(new Set())
   }
 
-  const visibleFields = schema[activeTab === "campaigns" ? "campaign" : activeTab === "adsets" ? "adset" : "ad"]?.fields.filter((f) => f.visible) || []
+  const visibleFields = (schema[activeTab === "campaigns" ? "campaign" : activeTab === "adsets" ? "adset" : "ad"] || []).filter((f) => f.isActive)
 
   return (
     <div className="flex h-screen flex-col bg-background">
@@ -350,22 +391,30 @@ export function CampaignWorkspace({ dspId, dspName, account: initialAccount, all
           <div className="flex items-center gap-4">
             <Badge className="bg-primary text-primary-foreground">{dspName}</Badge>
             <div className="flex items-center gap-2">
-              <div className="text-lg font-semibold text-foreground">{currentAccount.name}</div>
-              {allAccounts.length > 1 && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-6 w-6">
-                      <Edit2 className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start">
-                    {allAccounts.map((acc) => (
-                      <DropdownMenuItem key={acc.id} onClick={() => handleAccountChange(acc.id)}>
-                        {acc.name}
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
+              <span className="text-lg font-semibold text-foreground">
+                {currentAccount?.name || "Select Account"}
+              </span>
+              
+              {/* Account Switcher Modal Trigger */}
+              {all_selected_accounts?.length > 1 && (
+                <>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8 rounded-full hover:bg-accent"
+                    aria-label="Switch account"
+                    onClick={() => setShowAccountSwitchModal(true)}
+                  >
+                    <Edit2 className="h-4 w-4 text-muted-foreground" />
+                  </Button>
+                  <AccountSwitchModal
+                    isOpen={showAccountSwitchModal}
+                    onClose={() => setShowAccountSwitchModal(false)}
+                    accounts={all_selected_accounts}
+                    currentAccountId={currentAccount.id}
+                    onSelect={handleAccountChange}
+                  />
+                </>
               )}
             </div>
           </div>
@@ -378,29 +427,47 @@ export function CampaignWorkspace({ dspId, dspName, account: initialAccount, all
       {/* Actions Bar */}
       <div className="border-b border-border bg-card px-6 py-3">
         <div className="flex items-center justify-between">
-          <div className="flex gap-2">
+          <div className="flex items-center gap-3">
+            <div className="flex gap-2">
+              <Button
+                onClick={() => handleCreateClick("campaign")}
+                className="bg-primary text-primary-foreground hover:bg-primary/90"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Create {levelLabels.campaign}
+              </Button>
+              {hierarchy[1] && (
+                <Button
+                  onClick={() => handleCreateClick("adset")}
+                  className="bg-primary text-primary-foreground hover:bg-primary/90"
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add {levelLabels.adset}
+                </Button>
+              )}
+              {hierarchy[2] && (
+                <Button
+                  onClick={() => handleCreateClick("ad")}
+                  className="bg-primary text-primary-foreground hover:bg-primary/90"
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add {levelLabels.ad}
+                </Button>
+              )}
+            </div>
+
+            <div className="h-6 w-px bg-border mx-1" />
+
             <Button
-              onClick={() => handleCreateClick("campaign")}
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
+              variant="outline"
+              onClick={() => setShowCreativeUploadModal(true)}
+              className="border-primary text-primary hover:bg-primary/5"
             >
-              <Plus className="mr-2 h-4 w-4" />
-              Create Campaign
-            </Button>
-            <Button
-              onClick={() => handleCreateClick("adset")}
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Add Adset
-            </Button>
-            <Button
-              onClick={() => handleCreateClick("ad")}
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Add Ad
+              <Upload className="mr-2 h-4 w-4" />
+              Upload Creative
             </Button>
           </div>
+
           <div className="flex gap-2">
             {(campaigns.length > 0 || adsets.length > 0 || ads.length > 0) && (
               <Button
@@ -417,39 +484,57 @@ export function CampaignWorkspace({ dspId, dspName, account: initialAccount, all
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" disabled={!!fetchingType}>
-                  {fetchingType === "campaign" ? "Fetching..." : "Fetch Campaign"} <ChevronDown className="ml-2 h-4 w-4" />
+                  {fetchingType === "campaign" ? "Fetching..." : `Fetch ${levelLabels.campaign}`} <ChevronDown className="ml-2 h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => handleFetch("campaign", 20)}>Fetch last 20 campaigns</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleFetch("campaign", 50)}>Fetch last 50 campaigns</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleFetch("campaign", "all")}>Fetch all campaigns</DropdownMenuItem>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => handleRefresh()}>
+                  Fetch {levelLabels.campaign}s
+                </DropdownMenuItem>
+                {hierarchy[1] && (
+                  <DropdownMenuItem onClick={() => handleRefresh()}>
+                    Fetch {levelLabels.adset}s
+                  </DropdownMenuItem>
+                )}
+                {hierarchy[2] && (
+                  <DropdownMenuItem onClick={() => handleRefresh()}>
+                    Fetch {levelLabels.ad}s
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" disabled={!!fetchingType}>
-                  {fetchingType === "adset" ? "Fetching..." : "Fetch Adset"} <ChevronDown className="ml-2 h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => handleFetch("adset", 20)}>Fetch last 20 adsets</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleFetch("adset", 50)}>Fetch last 50 adsets</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleFetch("adset", "all")}>Fetch all adsets</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" disabled={!!fetchingType}>
-                  {fetchingType === "ad" ? "Fetching..." : "Fetch Ad"} <ChevronDown className="ml-2 h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => handleFetch("ad", 20)}>Fetch last 20 ads</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleFetch("ad", 50)}>Fetch last 50 ads</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleFetch("ad", "all")}>Fetch all ads</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            
+            {/* Keeping Fetch Adset/Ad for backward compatibility if needed, but the main dynamic one is above */}
+            {hierarchy[1] && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" disabled={!!fetchingType}>
+                    {fetchingType === "adset" ? "Fetching..." : `Fetch ${levelLabels.adset}`} <ChevronDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={() => handleFetch("adset", 20)}>Fetch last 20</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleFetch("adset", 50)}>Fetch last 50</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleFetch("adset", "all")}>Fetch all</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+
+            {hierarchy[2] && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" disabled={!!fetchingType}>
+                    {fetchingType === "ad" ? "Fetching..." : `Fetch ${levelLabels.ad}`} <ChevronDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={() => handleFetch("ad", 20)}>Fetch last 20</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleFetch("ad", 50)}>Fetch last 50</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleFetch("ad", "all")}>Fetch all</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+
             {selectedRows.size > 0 && (
               <Button variant="outline" onClick={handleBulkEditClick}>
                 Bulk Edit ({selectedRows.size})
@@ -462,73 +547,83 @@ export function CampaignWorkspace({ dspId, dspName, account: initialAccount, all
       {/* Tabs and Table */}
       <div className="flex-1 overflow-hidden px-6 py-4">
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="h-full flex flex-col">
-          <TabsList className="mb-4 bg-muted">
+          <TabsList className="bg-transparent border-b border-border w-full justify-start rounded-none h-auto p-0 gap-8">
             <TabsTrigger
               value="campaigns"
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-1 py-3 text-sm font-medium transition-colors"
             >
-              Campaigns ({getFilteredData(campaigns, "campaign").length})
+              {levelLabels.campaign}s
             </TabsTrigger>
-            <TabsTrigger
-              value="adsets"
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-            >
-              Adsets ({getFilteredData(adsets, "adset").length})
-            </TabsTrigger>
-            <TabsTrigger
-              value="ads"
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-            >
-              Ads ({getFilteredData(ads, "ad").length})
-            </TabsTrigger>
+            {hierarchy[1] && (
+              <TabsTrigger
+                value="adsets"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-1 py-3 text-sm font-medium transition-colors"
+              >
+                {levelLabels.adset}s
+              </TabsTrigger>
+            )}
+            {hierarchy[2] && (
+              <TabsTrigger
+                value="ads"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-1 py-3 text-sm font-medium transition-colors"
+              >
+                {levelLabels.ad}s
+              </TabsTrigger>
+            )}
           </TabsList>
 
-          <FilterBar 
-            type={activeTab === "campaigns" ? "campaign" : activeTab === "adsets" ? "adset" : "ad"}
-            filters={filters}
-            onFilterChange={handleFilterChange}
-          />
+          <div className="flex-1 overflow-hidden py-4 space-y-4">
+            <FilterBar
+              type={activeTab === "campaigns" ? "campaign" : activeTab === "adsets" ? "adset" : "ad"}
+              filters={filters}
+              onFilterChange={handleFilterChange}
+            />
 
-          <div className="flex-1 overflow-hidden">
-            <TabsContent value="campaigns" className="h-full m-0">
-              <DataTable
-                data={getFilteredData(campaigns, "campaign")}
-                fields={visibleFields}
-                onCellEdit={(id, field, value) => handleCellEdit(id, field, value, "campaign")}
-                selectedRows={selectedRows}
-                onSelectionChange={setSelectedRows}
-                onDuplicate={(id) => handleDuplicate(id, "campaign")}
-                onPause={(id) => handlePause(id, "campaign")}
-                onDelete={(id) => handleDelete(id, "campaign")}
-                isLoading={fetchingType === "campaign"}
-              />
-            </TabsContent>
-            <TabsContent value="adsets" className="h-full m-0">
-              <DataTable
-                data={getFilteredData(adsets, "adset")}
-                fields={visibleFields}
-                onCellEdit={(id, field, value) => handleCellEdit(id, field, value, "adset")}
-                selectedRows={selectedRows}
-                onSelectionChange={setSelectedRows}
-                onDuplicate={(id) => handleDuplicate(id, "adset")}
-                onPause={(id) => handlePause(id, "adset")}
-                onDelete={(id) => handleDelete(id, "adset")}
-                isLoading={fetchingType === "adset"}
-              />
-            </TabsContent>
-            <TabsContent value="ads" className="h-full m-0">
-              <DataTable
-                data={getFilteredData(ads, "ad")}
-                fields={visibleFields}
-                onCellEdit={(id, field, value) => handleCellEdit(id, field, value, "ad")}
-                selectedRows={selectedRows}
-                onSelectionChange={setSelectedRows}
-                onDuplicate={(id) => handleDuplicate(id, "ad")}
-                onPause={(id) => handlePause(id, "ad")}
-                onDelete={(id) => handleDelete(id, "ad")}
-                isLoading={fetchingType === "ad"}
-              />
-            </TabsContent>
+            <div className="flex-1 overflow-hidden h-[calc(100%-60px)]">
+              <TabsContent value="campaigns" className="h-full m-0">
+                <DataTable
+                  data={getFilteredData(campaigns, "campaign")}
+                  fields={visibleFields}
+                  onCellEdit={(id, field, value) => handleCellEdit(id, field, value, "campaign")}
+                  selectedRows={selectedRows}
+                  onSelectionChange={setSelectedRows}
+                  onDuplicate={(id) => handleDuplicate(id, "campaign")}
+                  onPause={(id) => handlePause(id, "campaign")}
+                  onDelete={(id) => handleDelete(id, "campaign")}
+                  isLoading={fetchingType === "campaign"}
+                />
+              </TabsContent>
+              {hierarchy[1] && (
+                <TabsContent value="adsets" className="h-full m-0">
+                  <DataTable
+                    data={getFilteredData(adsets, "adset")}
+                    fields={visibleFields}
+                    onCellEdit={(id, field, value) => handleCellEdit(id, field, value, "adset")}
+                    selectedRows={selectedRows}
+                    onSelectionChange={setSelectedRows}
+                    onDuplicate={(id) => handleDuplicate(id, "adset")}
+                    onPause={(id) => handlePause(id, "adset")}
+                    onDelete={(id) => handleDelete(id, "adset")}
+                    isLoading={fetchingType === "adset"}
+                  />
+                </TabsContent>
+              )}
+              {hierarchy[2] && (
+                <TabsContent value="ads" className="h-full m-0">
+                  <DataTable
+                    data={getFilteredData(ads, "ad")}
+                    fields={visibleFields}
+                    onCellEdit={(id, field, value) => handleCellEdit(id, field, value, "ad")}
+                    selectedRows={selectedRows}
+                    onSelectionChange={setSelectedRows}
+                    onDuplicate={(id) => handleDuplicate(id, "ad")}
+                    onPause={(id) => handlePause(id, "ad")}
+                    onDelete={(id) => handleDelete(id, "ad")}
+                    isLoading={fetchingType === "ad"}
+                  />
+                </TabsContent>
+              )}
+            </div>
           </div>
         </Tabs>
       </div>
@@ -540,10 +635,15 @@ export function CampaignWorkspace({ dspId, dspName, account: initialAccount, all
       {showTemplateModal && (
         <DefaultTemplateModal
           isOpen={showTemplateModal}
-          schema={schema}
-          defaultTemplate={defaultTemplate}
+          schema={pageSchema?.template_data || schema}
           onSave={(newTemplate) => {
-            setDefaultTemplate(newTemplate)
+            setSchema(newTemplate)
+            if (pageSchema) {
+              setPageSchema({
+                ...pageSchema,
+                template_data: newTemplate
+              })
+            }
             setShowTemplateModal(false)
           }}
           onClose={() => setShowTemplateModal(false)}
@@ -566,7 +666,7 @@ export function CampaignWorkspace({ dspId, dspName, account: initialAccount, all
         <CreateCampaignModal
           isOpen={showCreateModal}
           type={createModalType}
-          fields={schema[createModalType]?.fields || []}
+          fields={(pageSchema?.template_data || schema)[createModalType] || []}
           defaultTemplate={defaultTemplate[createModalType] || {}}
           campaigns={campaigns}
           adsets={adsets}
@@ -598,12 +698,19 @@ export function CampaignWorkspace({ dspId, dspName, account: initialAccount, all
         <MultiColumnEditModal
           isOpen={showMultiColumnEditModal}
           type={activeTab === "campaigns" ? "campaign" : activeTab === "adsets" ? "adset" : "ad"}
-          fields={schema[activeTab === "campaigns" ? "campaign" : activeTab === "adsets" ? "adset" : "ad"]?.fields || []}
+          fields={schema[activeTab === "campaigns" ? "campaign" : activeTab === "adsets" ? "adset" : "ad"] || []}
           initialData={(activeTab === "campaigns" ? campaigns : activeTab === "adsets" ? adsets : ads).filter(i => selectedRows.has(i.id))}
           onApply={handleMultiColumnSave}
           onClose={() => setShowMultiColumnEditModal(false)}
         />
       )}
+
+      {/* Creative Upload Modal */}
+      <CreativeUploadModal
+        isOpen={showCreativeUploadModal}
+        onClose={() => setShowCreativeUploadModal(false)}
+        onUpload={(data) => console.log("Creative uploaded:", data)}
+      />
     </div>
   )
 }
