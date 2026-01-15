@@ -12,7 +12,7 @@ import {
 import { Button } from "../ui/button"
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group"
 import { Label } from "../ui/label"
-import type { Field, Campaign, Adset } from "../../lib/types"
+import type { Field, Campaign, Adset, BatchOperation } from "../../lib/types"
 import { BulkCreateModal } from "./bulk-create-modal"
 import { cn } from "../../lib/utils"
 
@@ -23,7 +23,8 @@ type CreateCampaignModalProps = {
   defaultTemplate: any
   campaigns: Campaign[]
   adsets: Adset[]
-  onAddToBatch: (items: any[], type: "campaign" | "adset" | "ad") => void
+  batchOperations: BatchOperation[]
+  onAddToBatch: (operations: BatchOperation[]) => void
   onClose: () => void
 }
 
@@ -34,6 +35,7 @@ export function CreateCampaignModal({
   defaultTemplate,
   campaigns,
   adsets,
+  batchOperations,
   onAddToBatch,
   onClose,
 }: CreateCampaignModalProps) {
@@ -122,6 +124,7 @@ export function CreateCampaignModal({
       defaultTemplate={defaultTemplate}
       campaigns={campaigns}
       adsets={adsets}
+      batchOperations={batchOperations}
       onAddToBatch={onAddToBatch}
       onBack={handleBack}
       onClose={handleClose}

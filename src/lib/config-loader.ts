@@ -72,48 +72,293 @@ export async function loadDefaultTemplate(dspId: string): Promise<Record<string,
   return data[dspId] || {}
 }
 
-const DEMO_TEMPLATE_DATA: { platform_hierarchy: string[], template_data: Record<string, Field[]> } = {
+const DEMO_TEMPLATE_DATA: {
+  platform_hierarchy: string[];
+  template_data: Record<string, Field[]>;
+} = {
   platform_hierarchy: ["campaign", "adset", "ad"],
+
   template_data: {
-  "campaign": [
-    { "id": "name", "label": "Campaign Name", "type": "text", "required": true, "editable": false, "isActive": true },
-    { "id": "objective", "label": "Objective", "type": "select", "required": true, "editable": false, "isActive": true, "options": ["OUTCOME_AWARENESS", "OUTCOME_ENGAGEMENT", "OUTCOME_TRAFFIC", "OUTCOME_LEADS", "OUTCOME_SALES"] },
-    { "id": "status", "label": "Status", "type": "select", "required": true, "editable": false, "isActive": true, "options": ["ACTIVE", "PAUSED", "ARCHIVED"] },
-    { "id": "budget_optimization", "label": "Budget Optimization", "type": "select", "required": false, "editable": true, "isActive": true, "options": ["CBO", "ABO"] },
-    { "id": "buying_type", "label": "Buying Type", "type": "select", "required": true, "editable": false, "isActive": true, "options": ["AUCTION", "RESERVED"] },
-    { "id": "spend_cap", "label": "Spend Cap", "type": "number", "required": false, "editable": true, "isActive": true },
-    { "id": "start_date", "label": "Start Date", "type": "date", "required": false, "editable": true, "isActive": true },
-    { "id": "end_date", "label": "End Date", "type": "date", "required": false, "editable": true, "isActive": true }
-  ],
+    /* ========================= CAMPAIGN ========================= */
+    campaign: [
+      { id: "name", label: "Campaign Name", type: "text", required: true, editable: false, isActive: true },
 
-  "adset": [
-    { "id": "name", "label": "Adset Name", "type": "text", "required": true, "editable": false, "isActive": true },
-    { "id": "campaign_id", "label": "Campaign", "type": "select", "required": true, "editable": false, "isActive": true },
-    { "id": "status", "label": "Status", "type": "select", "required": true, "editable": false, "isActive": true, "options": ["ACTIVE", "PAUSED", "ARCHIVED"] },
-    { "id": "optimization_goal", "label": "Optimization Goal", "type": "select", "required": true, "editable": false, "isActive": true, "options": ["IMPRESSIONS", "LINK_CLICKS", "CONVERSIONS", "REACH"] },
-    { "id": "billing_event", "label": "Billing Event", "type": "select", "required": true, "editable": false, "isActive": true, "options": ["IMPRESSIONS", "LINK_CLICKS", "APP_INSTALLS"] },
-    { "id": "bid_amount", "label": "Bid Amount", "type": "number", "required": false, "editable": true, "isActive": true },
-    { "id": "daily_budget", "label": "Daily Budget", "type": "number", "required": false, "editable": true, "isActive": true },
-    { "id": "lifetime_budget", "label": "Lifetime Budget", "type": "number", "required": false, "editable": true, "isActive": true },
-    { "id": "targeting", "label": "Targeting", "type": "json", "required": true, "editable": false, "isActive": true },
-    { "id": "start_time", "label": "Start Time", "type": "datetime", "required": false, "editable": true, "isActive": true },
-    { "id": "end_time", "label": "End Time", "type": "datetime", "required": false, "editable": true, "isActive": true }
-  ],
+      {
+        id: "objective",
+        label: "Objective",
+        type: "select",
+        required: true,
+        editable: false,
+        isActive: true,
+        options: [
+          { value: "OUTCOME_AWARENESS", label: "Awareness" },
+          { value: "OUTCOME_ENGAGEMENT", label: "Engagement" },
+          { value: "OUTCOME_TRAFFIC", label: "Traffic" },
+          { value: "OUTCOME_LEADS", label: "Leads" },
+          { value: "OUTCOME_SALES", label: "Sales" }
+        ]
+      },
 
-  "ad": [
-    { "id": "name", "label": "Ad Name", "type": "text", "required": true, "editable": false, "isActive": true },
-    { "id": "adset_id", "label": "Adset", "type": "select", "required": true, "editable": false, "isActive": true },
-    { "id": "status", "label": "Status", "type": "select", "required": true, "editable": false, "isActive": true, "options": ["ACTIVE", "PAUSED", "ARCHIVED"] },
-    { "id": "creative_type", "label": "Creative Type", "type": "select", "required": true, "editable": false, "isActive": true, "options": ["IMAGE", "VIDEO", "CAROUSEL", "COLLECTION"] },
-    { "id": "primary_text", "label": "Primary Text", "type": "textarea", "required": true, "editable": false, "isActive": true },
-    { "id": "headline", "label": "Headline", "type": "text", "required": true, "editable": false, "isActive": true },
-    { "id": "description", "label": "Description", "type": "text", "required": false, "editable": true, "isActive": true },
-    { "id": "call_to_action", "label": "Call to Action", "type": "select", "required": true, "editable": false, "isActive": true, "options": ["LEARN_MORE", "SHOP_NOW", "SIGN_UP", "DOWNLOAD", "GET_QUOTE"] },
-    { "id": "destination_url", "label": "Destination URL", "type": "url", "required": true, "editable": false, "isActive": true },
-    { "id": "media_url", "label": "Media URL", "type": "url", "required": false, "editable": true, "isActive": true }
-  ]
-}
-}
+      {
+        id: "status",
+        label: "Status",
+        type: "select",
+        required: true,
+        editable: false,
+        isActive: true,
+        options: [
+          { value: "ACTIVE", label: "Active" },
+          { value: "PAUSED", label: "Paused" },
+          { value: "ARCHIVED", label: "Archived" }
+        ]
+      },
+
+      {
+        id: "budget_optimization",
+        label: "Budget Optimization",
+        type: "select",
+        required: false,
+        editable: true,
+        isActive: true,
+        options: [
+          { value: "CBO", label: "CBO" },
+          { value: "ABO", label: "ABO" }
+        ]
+      },
+
+      {
+        id: "buying_type",
+        label: "Buying Type",
+        type: "select",
+        required: true,
+        editable: false,
+        isActive: true,
+        options: [
+          { value: "AUCTION", label: "Auction" },
+          { value: "RESERVED", label: "Reserved" }
+        ]
+      },
+
+      { id: "spend_cap", label: "Spend Cap", type: "number", required: false, editable: true, isActive: true },
+      { id: "start_date", label: "Start Date", type: "date", required: false, editable: true, isActive: true },
+      { id: "end_date", label: "End Date", type: "date", required: false, editable: true, isActive: true }
+    ],
+
+    /* ========================= ADSET ========================= */
+    adset: [
+      { id: "name", label: "Adset Name", type: "text", required: true, editable: false, isActive: true },
+
+      {
+        id: "campaign_id",
+        label: "Campaign",
+        type: "select",
+        required: true,
+        editable: false,
+        isActive: true,
+        dataSource: {
+          type: "backend",
+          endpoint: "/api/v1/campaigns",
+          valueKey: "id",
+          labelKey: "name"
+        }
+      },
+
+      {
+        id: "status",
+        label: "Status",
+        type: "select",
+        required: true,
+        editable: false,
+        isActive: true,
+        options: [
+          { value: "ACTIVE", label: "Active" },
+          { value: "PAUSED", label: "Paused" },
+          { value: "ARCHIVED", label: "Archived" }
+        ]
+      },
+
+      {
+        id: "optimization_goal",
+        label: "Optimization Goal",
+        type: "select",
+        required: true,
+        editable: false,
+        isActive: true,
+        options: [
+          { value: "IMPRESSIONS", label: "Impressions" },
+          { value: "LINK_CLICKS", label: "Link Clicks" },
+          { value: "CONVERSIONS", label: "Conversions" },
+          { value: "REACH", label: "Reach" }
+        ]
+      },
+
+      {
+        id: "billing_event",
+        label: "Billing Event",
+        type: "select",
+        required: true,
+        editable: false,
+        isActive: true,
+        options: [
+          { value: "IMPRESSIONS", label: "Impressions" },
+          { value: "LINK_CLICKS", label: "Link Clicks" },
+          { value: "APP_INSTALLS", label: "App Installs" }
+        ]
+      },
+
+      { id: "bid_amount", label: "Bid Amount", type: "number", required: false, editable: true, isActive: true },
+      { id: "daily_budget", label: "Daily Budget", type: "number", required: false, editable: true, isActive: true },
+      { id: "lifetime_budget", label: "Lifetime Budget", type: "number", required: false, editable: true, isActive: true },
+
+      /* 🔹 Enhanced Targeting (replaces raw json, still maps 1:1 to Meta) */
+      {
+        id: "targeting",
+        label: "Targeting",
+        type: "object",
+        required: true,
+        editable: false,
+        isActive: true,
+        schema: [
+          { id: "age_min", label: "Min Age", type: "number", required: true, editable: true, isActive: true },
+          { id: "age_max", label: "Max Age", type: "number", required: true, editable: true, isActive: true },
+
+          {
+            id: "genders",
+            label: "Genders",
+            type: "multi-select",
+            required: false,
+            editable: true,
+            isActive: true,
+            options: [
+              { value: 1, label: "Male" },
+              { value: 2, label: "Female" }
+            ]
+          },
+
+          {
+            id: "geo_locations",
+            label: "Geo Locations",
+            type: "object",
+            required: true,
+            editable: true,
+            isActive: true,
+            schema: [
+              {
+                id: "countries",
+                label: "Countries",
+                type: "multi-select",
+                required: false,
+                editable: true,
+                isActive: true
+              },
+              {
+                id: "cities",
+                label: "Cities",
+                type: "array",
+                required: false,
+                editable: true,
+                isActive: true,
+                schema: [
+                  { id: "key", label: "City", type: "text", required: true, editable: true, isActive: true },
+                  { id: "radius", label: "Radius", type: "number", required: false, editable: true, isActive: true },
+                  {
+                    id: "distance_unit",
+                    label: "Distance Unit",
+                    type: "select",
+                    required: false,
+                    editable: true,
+                    isActive: true,
+                    options: [
+                      { value: "kilometer", label: "Kilometer" },
+                      { value: "mile", label: "Mile" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+
+      { id: "start_time", label: "Start Time", type: "datetime", required: false, editable: true, isActive: true },
+      { id: "end_time", label: "End Time", type: "datetime", required: false, editable: true, isActive: true }
+    ],
+
+    /* ========================= AD ========================= */
+    ad: [
+      { id: "name", label: "Ad Name", type: "text", required: true, editable: false, isActive: true },
+
+      {
+        id: "adset_id",
+        label: "Adset",
+        type: "select",
+        required: true,
+        editable: false,
+        isActive: true,
+        dataSource: {
+          type: "backend",
+          endpoint: "/api/v1/adsets",
+          valueKey: "id",
+          labelKey: "name"
+        }
+      },
+
+      {
+        id: "status",
+        label: "Status",
+        type: "select",
+        required: true,
+        editable: false,
+        isActive: true,
+        options: [
+          { value: "ACTIVE", label: "Active" },
+          { value: "PAUSED", label: "Paused" },
+          { value: "ARCHIVED", label: "Archived" }
+        ]
+      },
+
+      {
+        id: "creative_type",
+        label: "Creative Type",
+        type: "select",
+        required: true,
+        editable: false,
+        isActive: true,
+        options: [
+          { value: "IMAGE", label: "Image" },
+          { value: "VIDEO", label: "Video" },
+          { value: "CAROUSEL", label: "Carousel" },
+          { value: "COLLECTION", label: "Collection" }
+        ]
+      },
+
+      { id: "primary_text", label: "Primary Text", type: "textarea", required: true, editable: false, isActive: true },
+      { id: "headline", label: "Headline", type: "text", required: true, editable: false, isActive: true },
+      { id: "description", label: "Description", type: "text", required: false, editable: true, isActive: true },
+
+      {
+        id: "call_to_action",
+        label: "Call to Action",
+        type: "select",
+        required: true,
+        editable: false,
+        isActive: true,
+        options: [
+          { value: "LEARN_MORE", label: "Learn More" },
+          { value: "SHOP_NOW", label: "Shop Now" },
+          { value: "SIGN_UP", label: "Sign Up" },
+          { value: "DOWNLOAD", label: "Download" },
+          { value: "GET_QUOTE", label: "Get Quote" }
+        ]
+      },
+
+      { id: "destination_url", label: "Destination URL", type: "url", required: true, editable: false, isActive: true },
+      { id: "media_url", label: "Media URL", type: "url", required: false, editable: true, isActive: true }
+    ]
+  }
+};
+
+
 
 const DEMO_ACCOUNTS: { popup_heading: string; popup_description: string; accounts: Account[] } = {
   popup_heading: "Choose Meta Ad Account",

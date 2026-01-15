@@ -74,8 +74,8 @@ export function BulkEditModal({ isOpen, type, fields, selectedCount, onApply, on
                   </SelectTrigger>
                   <SelectContent>
                     {currentField.options.map((option) => (
-                      <SelectItem key={option} value={option}>
-                        {option}
+                      <SelectItem key={option.value.toString()} value={option.value.toString()}>
+                        {option.label}
                       </SelectItem>
                     ))}
                   </SelectContent>

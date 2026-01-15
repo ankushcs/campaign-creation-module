@@ -1,11 +1,12 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Button } from "../ui/button"
 import { Badge } from "../ui/badge"
+import { Button } from "../ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
 import { Settings, Plus, ChevronDown, Edit2, RefreshCw, Upload } from "lucide-react"
-import type { Campaign, Adset, Ad, Field, Batch, BatchItem, Account } from "../../lib/types"
+import { v4 as uuidv4 } from 'uuid'
+import type { Campaign, Adset, Ad, Field, BatchOperation, Account } from "../../lib/types"
 import { DataTable } from "./data-table"
 import { BatchPanel } from "./batch-panel"
 import { DefaultTemplateModal } from "./default-template-modal"
@@ -22,7 +23,6 @@ import {
 import { useCampaignStore } from "../../lib/store"
 import { AccountSwitchModal } from "./account-switch-modal"
 import { CreativeUploadModal } from "./creative-upload-modal"
-// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { FilterBar, type Filters } from "./filter-bar"
 import { BulkEditChoiceModal } from "./bulk-edit-choice-modal"
 import { MultiColumnEditModal } from "./multi-column-edit-modal"
@@ -33,9 +33,6 @@ type CampaignWorkspaceProps = {
   account: Account
   allAccounts: Account[]
 }
-const GROUP_COLORS = ["bg-blue-50", "bg-green-50", "bg-purple-50", "bg-orange-50", "bg-pink-50", "bg-yellow-50"]
-
-let colorIndex = 0
 
 export function CampaignWorkspace({ dspId, dspName, account: initialAccount, allAccounts }: CampaignWorkspaceProps) {
   // Get data from global store
@@ -44,7 +41,9 @@ export function CampaignWorkspace({ dspId, dspName, account: initialAccount, all
     current_active_account,
     setCurrentActiveAccount,
     pageSchema,
-    setPageSchema
+    setPageSchema,
+    batch,
+    addItemToBatch,
   } = useCampaignStore()
   
   // Derived hierarchy labels (pluralized for tabs)
@@ -63,7 +62,6 @@ export function CampaignWorkspace({ dspId, dspName, account: initialAccount, all
   const [campaigns, setCampaigns] = useState<Campaign[]>([])
   const [adsets, setAdsets] = useState<Adset[]>([])
   const [ads, setAds] = useState<Ad[]>([])
-  const [batch, setBatch] = useState<Batch>({ id: "1", items: [], createdAt: new Date(), status: "draft" })
   const [showTemplateModal, setShowTemplateModal] = useState(false)
   const [showReviewModal, setShowReviewModal] = useState(false)
   const [showCreateModal, setShowCreateModal] = useState(false)
@@ -275,31 +273,20 @@ export function CampaignWorkspace({ dspId, dspName, account: initialAccount, all
     setShowCreateModal(true)
   }
 
-  const handleCreateBatch = (items: any[], type: "campaign" | "adset" | "ad") => {
-    const groupColor = GROUP_COLORS[colorIndex % GROUP_COLORS.length]
-    colorIndex++
-
-    const batchItems: BatchItem[] = items.map((item) => ({
-      id: `batch_${Date.now()}_${Math.random()}`,
-      type,
-      action: "create",
-      data: { ...item, _draft: true, _groupColor: groupColor },
-      validationStatus: "pending",
-    }))
-
-    setBatch((prev) => ({
-      ...prev,
-      items: [...prev.items, ...batchItems],
-    }))
+  const handleCreateBatch = (operations: BatchOperation[]) => {
+    addItemToBatch(operations)
 
     // Add to respective state with draft flag
-    if (type === "campaign") {
-      setCampaigns((prev) => [...prev, ...items.map((item) => ({ ...item, _draft: true, _groupColor: groupColor }))])
-    } else if (type === "adset") {
-      setAdsets((prev) => [...prev, ...items.map((item) => ({ ...item, _draft: true, _groupColor: groupColor }))])
-    } else {
-      setAds((prev) => [...prev, ...items.map((item) => ({ ...item, _draft: true, _groupColor: groupColor }))])
-    }
+    operations.forEach(op => {
+      const item = { ...op.data, id: op.client_id || op.id, _draft: true, _groupColor: op._groupColor }
+      if (op.entity_type === "campaign") {
+        setCampaigns((prev) => [...prev, item])
+      } else if (op.entity_type === "adset") {
+        setAdsets((prev) => [...prev, item])
+      } else {
+        setAds((prev) => [...prev, item])
+      }
+    })
 
     setShowCreateModal(false)
   }
@@ -347,18 +334,17 @@ export function CampaignWorkspace({ dspId, dspName, account: initialAccount, all
     }
 
     // Add to batch as updates
-    const updateBatchItems: BatchItem[] = updatedItems.map((item) => ({
-      id: `batch_update_${item.id}_${Date.now()}`,
-      type,
-      action: "update",
+    const updateBatchItems: BatchOperation[] = updatedItems.map((item) => ({
+      operation_id: uuidv4(),
+      operation_type: "edit",
+      entity_type: type,
+      platform_id: item.id,
       data: item,
+      id: uuidv4(),
       validationStatus: "pending"
     }))
 
-    setBatch(prev => ({
-      ...prev,
-      items: [...prev.items, ...updateBatchItems]
-    }))
+    addItemToBatch(updateBatchItems)
 
     setShowMultiColumnEditModal(false)
     setSelectedRows(new Set())
@@ -653,7 +639,6 @@ export function CampaignWorkspace({ dspId, dspName, account: initialAccount, all
       {showReviewModal && (
         <ReviewBatchModal
           isOpen={showReviewModal}
-          batch={batch}
           onClose={() => setShowReviewModal(false)}
           onPublish={() => {
             // Handle publish
@@ -670,6 +655,7 @@ export function CampaignWorkspace({ dspId, dspName, account: initialAccount, all
           defaultTemplate={defaultTemplate[createModalType] || {}}
           campaigns={campaigns}
           adsets={adsets}
+          batchOperations={batch?.operations || []}
           onAddToBatch={handleCreateBatch}
           onClose={() => setShowCreateModal(false)}
         />

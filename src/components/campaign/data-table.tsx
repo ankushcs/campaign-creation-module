@@ -85,8 +85,8 @@ export function DataTable({
             </SelectTrigger>
             <SelectContent>
               {field.options.map((option) => (
-                <SelectItem key={option} value={option}>
-                  {option}
+                <SelectItem key={option.value.toString()} value={option.value.toString()}>
+                  {option.label}
                 </SelectItem>
               ))}
             </SelectContent>

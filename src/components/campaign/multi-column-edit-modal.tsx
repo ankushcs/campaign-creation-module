@@ -134,7 +134,7 @@ export function MultiColumnEditModal({
                               </SelectTrigger>
                               <SelectContent>
                                 {field.options.map(opt => (
-                                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                                    <SelectItem key={opt.value.toString()} value={opt.value.toString()}>{opt.label}</SelectItem>
                                 ))}
                               </SelectContent>
                            </Select>

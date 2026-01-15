@@ -15,7 +15,8 @@ type BatchPanelProps = {
 export function BatchPanel({ batch, onReview }: BatchPanelProps) {
   const [isMinimized, setIsMinimized] = useState(true)
 
-  const itemCount = batch?.items.length || 0
+  const operations = batch?.operations || []
+  const itemCount = operations.length
 
   if (isMinimized) {
     return (
@@ -33,7 +34,7 @@ export function BatchPanel({ batch, onReview }: BatchPanelProps) {
     )
   }
 
-  if (!batch || batch.items.length === 0) {
+  if (!batch || operations.length === 0) {
     return (
       <Card className="fixed bottom-6 right-6 w-80 border-2 border-border bg-card p-4 shadow-lg animate-in slide-in-from-bottom-5 fade-in duration-200">
         <div className="flex items-center justify-between mb-2">
@@ -52,9 +53,9 @@ export function BatchPanel({ batch, onReview }: BatchPanelProps) {
     )
   }
 
-  const campaigns = batch.items.filter((item) => item.type === "campaign").length
-  const adsets = batch.items.filter((item) => item.type === "adset").length
-  const ads = batch.items.filter((item) => item.type === "ad").length
+  const campaigns = operations.filter((op) => op.entity_type === "campaign").length
+  const adsets = operations.filter((op) => op.entity_type === "adset").length
+  const ads = operations.filter((op) => op.entity_type === "ad").length
 
   return (
     <Card className="fixed bottom-6 right-6 w-80 border-2 border-primary bg-card p-4 shadow-lg animate-in slide-in-from-bottom-5 fade-in duration-200">
@@ -66,7 +67,7 @@ export function BatchPanel({ batch, onReview }: BatchPanelProps) {
             </div>
             <div>
               <div className="font-semibold text-card-foreground">Batch #{batch.id}</div>
-              <div className="text-sm text-muted-foreground">{batch.items.length} items</div>
+              <div className="text-sm text-muted-foreground">{operations.length} items</div>
             </div>
           </div>
           <Button variant="ghost" size="icon" onClick={() => setIsMinimized(true)}>

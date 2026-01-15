@@ -12,7 +12,18 @@ export type Account = {
   name: string
 }
 
-export type FieldType = "text" | "number" | "select" | "date" | "datetime" | "textarea" | "url" | "json"
+export type FieldType = 
+  | "text" 
+  | "number" 
+  | "select" 
+  | "multi-select" 
+  | "date" 
+  | "datetime" 
+  | "textarea" 
+  | "url" 
+  | "json"
+  | "object"
+  | "array"
 
 export type Field = {
   id: string
@@ -21,7 +32,15 @@ export type Field = {
   required: boolean
   editable: boolean
   isActive: boolean
-  options?: string[]
+  options?: {label : string, value : string | number}[]
+  uiHint?: "accordion" | "table" | string
+  dataSource?: {
+    type: "backend" | "api" | string
+    endpoint: string
+    valueKey: string
+    labelKey: string
+  }
+  schema?: Field[]
 }
 
 export type LevelType = "campaign" | "adset" | "ad"
@@ -79,18 +98,33 @@ export type Ad = {
   _groupColor?: string
 }
 
-export type BatchItem = {
-  id: string
-  type: LevelType
-  action: "create" | "update"
-  data: Campaign | Adset | Ad
+export type BatchOperation = {
+  operation_id: string
+  operation_type: "create" | "edit"
+  entity_type: LevelType
+  client_id?: string
+  platform_id?: string
+  parent_ref?: {
+    type: "client_id" | "platform_id"
+    value: string
+  }
+  data: any
+  // UI Meta
+  id: string // keep internal ID for storage/deletion
   validationStatus: "pending" | "success" | "error"
   validationMessage?: string
+  _groupColor?: string
 }
 
 export type Batch = {
+  platform: string
+  advertiser_id: string
+  operations: BatchOperation[]
+  options: {
+    validate_only: boolean
+  }
+  // Internal UI meta
   id: string
-  items: BatchItem[]
   createdAt: Date
   status: "draft" | "submitted"
 }
